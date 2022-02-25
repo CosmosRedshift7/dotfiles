@@ -9,6 +9,9 @@ export PATH="/opt/pycharm-2021.3/bin:$PATH"
 export PATH=/usr/local/texlive/2021/bin/x86_64-linux:$PATH
 export PATH=$HOME/.local/bin:$PATH
 
+export TERM="xterm-256color"
+
+
 # Matlab problems
 # export MESA_LOADER_DRIVER_OVERRIDE=i965
 # export GTK_PATH=/usr/lib/x86_64-linux-gnu/gtk-2.0
@@ -133,3 +136,5 @@ unset __conda_setup
 alias matlab='__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia matlab'
 alias matlab-cli='__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia matlab -nodesktop -nosplash'
 alias config='/usr/bin/git --git-dir=$HOME/dotfiles/ --work-tree=$HOME'
+# Merge Xresources
+alias merge='xrdb -merge ~/.Xresources'
