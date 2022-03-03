@@ -5,39 +5,41 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 " NERDTree - быстрый просмотр файлов
 Plug 'preservim/nerdtree'
-" Сoc - автодополнение 
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-" Дополнения для NERDTree
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'preservim/nerdcommenter'
-" Дополнение для Git, а также иконки для NERDTree
-Plug 'airblade/vim-gitgutter'
 Plug 'ryanoasis/vim-devicons'
+" Сoc - автодополнение 
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Дополнение для Git
+Plug 'airblade/vim-gitgutter'
 " Линия статуса
 Plug 'itchyny/lightline.vim'
 " Проверка Синтаксиса
 Plug 'scrooloose/syntastic' 
-" -----------------------------------------------------------------
+" LaTex
 Plug 'lervag/vimtex'
-let g:tex_flavor='latex'
-let g:vimtex_view_method='zathura'
-"let g:vimtex_quickfix_mode=0
-set conceallevel=2
-let g:tex_conceal='abdmg'
-let g:pandoc#syntax#conceal#use=1
-hi Conceal ctermbg=none
 " Themes
 Plug 'dylanaraps/wal.vim'
 Plug 'arcticicestudio/nord-vim'
 Plug 'joshdick/onedark.vim'
 Plug 'cocopon/iceberg.vim'
+Plug 'dracula/vim', {'as': 'dracula'}
 call plug#end()
+
+colorscheme wal
+
+" LaTex
+let g:tex_flavor='latex'
+let g:vimtex_view_method='zathura'
+let g:tex_conceal='abdmg'
+let g:pandoc#syntax#conceal#use=1
+"let g:vimtex_quickfix_mode=0
+set conceallevel=2
+hi Conceal ctermbg=none
 
 " Matlab
 source $VIMRUNTIME/macros/matchit.vim
 au FileType matlab set foldmethod=syntax foldcolumn=2 foldlevel=33
-
-" let loaded_matchit = 1
 
 set clipboard=unnamedplus
 set nocompatible
@@ -45,13 +47,65 @@ set mouse=a
 syntax on
 set number
 set relativenumber
-set ruler
 filetype plugin indent on
+
+set hidden                      " Needed to keep multiple buffers open
+set nobackup                    " No auto backups
+set noswapfile                  " No swap
 
 source $HOME/.config/nvim/plug-config/coc.vim
 
-" Комбинация клавиш jkl - действует как Escape в режиме Insert
-inoremap jkl <ESC>
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Remap Keys
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Remap ESC to ii
+:imap ii <Esc>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Status Line
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" The lightline.vim theme
+let g:lightline = {
+      \ 'colorscheme': 'nord',
+      \ }
+
+" Always show statusline
+set laststatus=2
+" Uncomment to prevent non-normal modes showing in powerline and below powerline.
+set noshowmode
+
+" " Линия статуса: конфигурация
+" set noshowmode " Табличка --INSERT-- больше не выводится на экран
+" set laststatus=2
+" let g:lightline = {
+"       \ 'colorscheme': 'nord',
+"       \ 'active': {
+"       \   'left': [ [ 'mode', 'paste' ],
+"       \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+"       \ },
+"       \ 'component_function': {
+"       \   'gitbranch': 'fugitive#head'
+"       \ },
+"       \ }
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Text, tab and indent related
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set expandtab                   " Use spaces instead of tabs.
+set smarttab                    " Be smart using tabs ;)
+set shiftwidth=4                " One tab == four spaces.
+set tabstop=4                   " One tab == four spaces.
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Splits and Tabbed Files
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set splitbelow splitright
+
+" Remap splits navigation to just CTRL + hjkl
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
 
 " Делаем так, чтобы навигация работала на русском языке
 nmap о j
@@ -70,23 +124,7 @@ nmap ++ <plug>NERDCommenterToggl
 let g:NERDTreeGitStatusWithFlags = 1
 let g:NERDTreeIgnore = ['^node_modules$']
 
-colorscheme wal 
-
-" Линия статуса: конфигурация
-set noshowmode " Табличка --INSERT-- больше не выводится на экран
-set laststatus=2
-let g:lightline = {
-      \ 'colorscheme': 'nord',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'gitbranch': 'fugitive#head'
-      \ },
-      \ }
-
-let g:no_highlight_group_for_current_word=["Statement", "Comment", "Type", "PreProc"]
+" Matlab files
 function s:HighlightWordUnderCursor()
     let l:syntaxgroup = synIDattr(synIDtrans(synID(line("."), stridx(getline("."), expand('<cword>')) + 1, 1)), "name")
 
@@ -97,4 +135,9 @@ function s:HighlightWordUnderCursor()
     endif
 endfunction
 
-autocmd CursorMoved * call s:HighlightWordUnderCursor()
+function s:OnMatlabFiles()
+	let g:no_highlight_group_for_current_word=["Statement", "Comment", "Type", "PreProc"]
+	autocmd CursorMoved * call s:HighlightWordUnderCursor()
+endfunction
+
+au BufNewFile,BufRead *.m call s:OnMatlabFiles()
